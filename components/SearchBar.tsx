@@ -3,13 +3,13 @@ import { FaSearch } from 'react-icons/fa';
 
 export default function SearchBar() {
   const [query, setQuery] = useState('');
-  
-  const handleSearch = (e) => {
+
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // Handle search logic
     console.log('Searching for:', query);
   };
-  
+
   return (
     <form 
       onSubmit={handleSearch}

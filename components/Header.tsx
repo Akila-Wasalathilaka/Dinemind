@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react';
+import React from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { 
@@ -18,7 +19,7 @@ import ThemeToggle from './ThemeToggle';
 
 interface NavLink {
   href: string;
-  icon: JSX.Element;
+  icon: React.ReactNode;
   label: string;
 }
 
@@ -32,21 +33,7 @@ const navLinks: NavLink[] = [
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 20) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  const [isLoggedIn] = useState(false);
 
   return (
     <>

@@ -4,7 +4,7 @@ export default function ContactPage() {
       <section className="bg-white p-6 rounded-lg shadow-md">
         <h1 className="text-4xl font-bold text-gray-800 mb-4">Contact Us</h1>
         <p className="text-lg text-gray-600 mb-6">
-          Have questions or feedback? Reach out to us, and we'll get back to you as soon as possible!
+          Have questions or feedback? Reach out to us, and we&apos;ll get back to you as soon as possible!
         </p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
