@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion"; // Import framer-motion for animations
 
 // Extended menu items with all the properties used in filtering
 const menuItems = [
@@ -21,7 +22,7 @@ const menuItems = [
     occasion: "Casual",
     time: "Day",
     customer: "Adults",
-    weather: "Any"
+    weather: "Any",
   },
   {
     id: 2,
@@ -40,7 +41,7 @@ const menuItems = [
     occasion: "Casual",
     time: "Evening",
     customer: "Adults",
-    weather: "Any"
+    weather: "Any",
   },
   {
     id: 3,
@@ -59,7 +60,7 @@ const menuItems = [
     occasion: "Casual",
     time: "Evening",
     customer: "Anyone",
-    weather: "Any"
+    weather: "Any",
   },
   {
     id: 4,
@@ -78,7 +79,7 @@ const menuItems = [
     occasion: "Casual",
     time: "Day",
     customer: "Anyone",
-    weather: "Any"
+    weather: "Any",
   },
   {
     id: 5,
@@ -97,7 +98,7 @@ const menuItems = [
     occasion: "Casual",
     time: "Day",
     customer: "Anyone",
-    weather: "Any"
+    weather: "Any",
   },
   {
     id: 6,
@@ -116,7 +117,7 @@ const menuItems = [
     occasion: "Special",
     time: "Evening",
     customer: "Adults",
-    weather: "Any"
+    weather: "Any",
   },
   {
     id: 7,
@@ -135,7 +136,7 @@ const menuItems = [
     occasion: "Casual",
     time: "Evening",
     customer: "Adults",
-    weather: "Any"
+    weather: "Any",
   },
   {
     id: 8,
@@ -154,7 +155,7 @@ const menuItems = [
     occasion: "Casual",
     time: "Day",
     customer: "Anyone",
-    weather: "Any"
+    weather: "Any",
   },
 ];
 
@@ -172,7 +173,7 @@ export default function RecommendationPage() {
     weather: "",
     priceRange: { min: 0, max: 15 },
     category: "",
-    sortBy: "default"
+    sortBy: "default",
   });
 
   const [suggestions, setSuggestions] = useState(menuItems);
@@ -220,9 +221,7 @@ export default function RecommendationPage() {
     const filtered = menuItems.filter((item) => {
       return (
         (!prefs.cuisine || item.cuisine === prefs.cuisine) &&
-        (!prefs.dietary ||
-          item.dietary === prefs.dietary ||
-          item.dietary === "") &&
+        (!prefs.dietary || item.dietary === prefs.dietary || item.dietary === "") &&
         (!prefs.spice || item.spice <= prefs.spice) &&
         (!prefs.mealType || item.type === prefs.mealType) &&
         (!prefs.flavor || item.flavor === prefs.flavor) &&
@@ -237,7 +236,7 @@ export default function RecommendationPage() {
     });
 
     // Sort the filtered items
-    switch(prefs.sortBy) {
+    switch (prefs.sortBy) {
       case "price-low":
         filtered.sort((a, b) => a.price - b.price);
         break;
@@ -254,7 +253,6 @@ export default function RecommendationPage() {
         filtered.sort((a, b) => a.title.localeCompare(b.title));
         break;
       default:
-        // Default sorting (can be by ID or other default order)
         filtered.sort((a, b) => a.id - b.id);
     }
 
@@ -269,7 +267,7 @@ export default function RecommendationPage() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    
+
     if (name === "priceMin" || name === "priceMax") {
       const priceValue = parseFloat(value);
       setPreferences((prev) => ({
@@ -298,21 +296,23 @@ export default function RecommendationPage() {
     }
 
     return paginatedSuggestions.map((item) => (
-      <div
+      <motion.div
         key={item.id}
-        className="bg-white rounded-lg shadow-md transform transition-transform hover:-translate-y-1 hover:shadow-lg"
+        className="bg-white rounded-lg shadow-md"
+        whileHover={{ y: -5, boxShadow: "0 10px 20px rgba(0, 0, 0, 0.15)" }}
+        transition={{ type: "spring", stiffness: 300, damping: 20 }}
       >
         <img
           src={item.image}
           alt={item.title}
           className="w-full h-48 object-cover rounded-t-lg"
         />
-        <div className="p-4">
-          <div className="flex justify-between items-center mb-2">
+        <div className="p-6">
+          <div className="flex justify-between items-center mb-3">
             <h3 className="text-xl font-semibold text-gray-800">{item.title}</h3>
             <span className="font-bold text-red-600">{item.priceDisplay}</span>
           </div>
-          <div className="flex flex-wrap gap-2 mb-2">
+          <div className="flex flex-wrap gap-2 mb-3">
             <span className="px-2 py-1 bg-gray-100 text-gray-700 text-sm rounded">{item.category}</span>
             <span className="px-2 py-1 bg-gray-100 text-gray-700 text-sm rounded">{item.cuisine}</span>
             <span className="px-2 py-1 bg-gray-100 text-gray-700 text-sm rounded">{item.dietary}</span>
@@ -321,11 +321,15 @@ export default function RecommendationPage() {
             </span>
           </div>
           <p className="text-gray-600 mb-4">{item.description}</p>
-          <button className="mt-2 bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700 transition-colors text-lg w-full">
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition-colors text-lg w-full"
+          >
             Order Now
-          </button>
+          </motion.button>
         </div>
-      </div>
+      </motion.div>
     ));
   };
 
@@ -335,8 +339,10 @@ export default function RecommendationPage() {
     const buttons = [];
 
     buttons.push(
-      <button
+      <motion.button
         key="prev"
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
         className={`px-6 py-3 rounded text-lg ${
           currentPage === 1 ? "bg-gray-300" : "bg-red-600 text-white"
         }`}
@@ -344,13 +350,15 @@ export default function RecommendationPage() {
         onClick={() => setCurrentPage(currentPage - 1)}
       >
         Previous
-      </button>
+      </motion.button>
     );
 
     for (let i = 1; i <= maxButtons; i++) {
       buttons.push(
-        <button
+        <motion.button
           key={i}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
           className={`px-4 py-3 rounded text-lg ${
             i === currentPage
               ? "bg-red-700 text-white"
@@ -359,13 +367,15 @@ export default function RecommendationPage() {
           onClick={() => setCurrentPage(i)}
         >
           {i}
-        </button>
+        </motion.button>
       );
     }
 
     buttons.push(
-      <button
+      <motion.button
         key="next"
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
         className={`px-6 py-3 rounded text-lg ${
           currentPage === totalPages ? "bg-gray-300" : "bg-red-600 text-white"
         }`}
@@ -373,7 +383,7 @@ export default function RecommendationPage() {
         onClick={() => setCurrentPage(currentPage + 1)}
       >
         Next
-      </button>
+      </motion.button>
     );
 
     return buttons;
@@ -384,9 +394,9 @@ export default function RecommendationPage() {
   }, []);
 
   return (
-    <main className="relative min-h-screen ml-[200px] w-[calc(100%-200px)] p-6">
-      <section className="bg-white p-6 rounded-lg shadow-md mb-8">
-        <h1 className="text-4xl font-bold text-gray-800 mb-4">
+    <main className="md:ml-[200px] py-20 px-12 md:px-24 bg-gray-50 min-h-screen">
+      <section className="bg-white p-8 rounded-lg shadow-md mb-12">
+        <h1 className="text-4xl font-bold text-gray-800 mb-6">
           Personalize Your Meal
         </h1>
         <form
@@ -529,178 +539,190 @@ export default function RecommendationPage() {
 
           {/* Advanced Filters Toggle */}
           <div className="mb-4 md:col-span-2">
-            <button 
-              type="button" 
+            <motion.button
+              type="button"
               onClick={() => setShowAdvanced(!showAdvanced)}
               className="text-red-600 font-medium flex items-center"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
               {showAdvanced ? '− Hide Advanced Filters' : '+ Show Advanced Filters'}
-            </button>
+            </motion.button>
           </div>
 
-          {/* Advanced Filters */}
-          {showAdvanced && (
-            <>
-              <div className="mb-4">
-                <label htmlFor="flavor" className="block text-gray-700 font-medium mb-2">
-                  Flavor Profile
-                </label>
-                <select
-                  id="flavor"
-                  name="flavor"
-                  value={preferences.flavor}
-                  onChange={handleInputChange}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500"
-                >
-                  <option value="">Any Flavor</option>
-                  <option value="Savory">Savory</option>
-                  <option value="Sweet">Sweet</option>
-                  <option value="Spicy">Spicy</option>
-                  <option value="Mild">Mild</option>
-                  <option value="Tangy">Tangy</option>
-                </select>
-              </div>
+          {/* Advanced Filters with Animation */}
+          <AnimatePresence>
+            {showAdvanced && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3 }}
+                className="grid grid-cols-1 md:grid-cols-2 gap-6 md:col-span-2"
+              >
+                <div className="mb-4">
+                  <label htmlFor="flavor" className="block text-gray-700 font-medium mb-2">
+                    Flavor Profile
+                  </label>
+                  <select
+                    id="flavor"
+                    name="flavor"
+                    value={preferences.flavor}
+                    onChange={handleInputChange}
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500"
+                  >
+                    <option value="">Any Flavor</option>
+                    <option value="Savory">Savory</option>
+                    <option value="Sweet">Sweet</option>
+                    <option value="Spicy">Spicy</option>
+                    <option value="Mild">Mild</option>
+                    <option value="Tangy">Tangy</option>
+                  </select>
+                </div>
 
-              <div className="mb-4">
-                <label htmlFor="portion" className="block text-gray-700 font-medium mb-2">
-                  Portion Size
-                </label>
-                <select
-                  id="portion"
-                  name="portion"
-                  value={preferences.portion}
-                  onChange={handleInputChange}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500"
-                >
-                  <option value="">Any Size</option>
-                  <option value="Small">Small</option>
-                  <option value="Regular">Regular</option>
-                  <option value="Large">Large</option>
-                </select>
-              </div>
+                <div className="mb-4">
+                  <label htmlFor="portion" className="block text-gray-700 font-medium mb-2">
+                    Portion Size
+                  </label>
+                  <select
+                    id="portion"
+                    name="portion"
+                    value={preferences.portion}
+                    onChange={handleInputChange}
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500"
+                  >
+                    <option value="">Any Size</option>
+                    <option value="Small">Small</option>
+                    <option value="Regular">Regular</option>
+                    <option value="Large">Large</option>
+                  </select>
+                </div>
 
-              <div className="mb-4">
-                <label htmlFor="occasion" className="block text-gray-700 font-medium mb-2">
-                  Occasion
-                </label>
-                <select
-                  id="occasion"
-                  name="occasion"
-                  value={preferences.occasion}
-                  onChange={handleInputChange}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500"
-                >
-                  <option value="">Any Occasion</option>
-                  <option value="Casual">Casual</option>
-                  <option value="Special">Special</option>
-                  <option value="Party">Party</option>
-                  <option value="Quick Bite">Quick Bite</option>
-                </select>
-              </div>
+                <div className="mb-4">
+                  <label htmlFor="occasion" className="block text-gray-700 font-medium mb-2">
+                    Occasion
+                  </label>
+                  <select
+                    id="occasion"
+                    name="occasion"
+                    value={preferences.occasion}
+                    onChange={handleInputChange}
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500"
+                  >
+                    <option value="">Any Occasion</option>
+                    <option value="Casual">Casual</option>
+                    <option value="Special">Special</option>
+                    <option value="Party">Party</option>
+                    <option value="Quick Bite">Quick Bite</option>
+                  </select>
+                </div>
 
-              <div className="mb-4">
-                <label htmlFor="time" className="block text-gray-700 font-medium mb-2">
-                  Time of Day
-                </label>
-                <select
-                  id="time"
-                  name="time"
-                  value={preferences.time}
-                  onChange={handleInputChange}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500"
-                >
-                  <option value="">Any Time</option>
-                  <option value="Morning">Morning</option>
-                  <option value="Day">Day</option>
-                  <option value="Evening">Evening</option>
-                  <option value="Night">Night</option>
-                </select>
-              </div>
+                <div className="mb-4">
+                  <label htmlFor="time" className="block text-gray-700 font-medium mb-2">
+                    Time of Day
+                  </label>
+                  <select
+                    id="time"
+                    name="time"
+                    value={preferences.time}
+                    onChange={handleInputChange}
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500"
+                  >
+                    <option value="">Any Time</option>
+                    <option value="Morning">Morning</option>
+                    <option value="Day">Day</option>
+                    <option value="Evening">Evening</option>
+                    <option value="Night">Night</option>
+                  </select>
+                </div>
 
-              <div className="mb-4">
-                <label htmlFor="customerType" className="block text-gray-700 font-medium mb-2">
-                  Customer Type
-                </label>
-                <select
-                  id="customerType"
-                  name="customerType"
-                  value={preferences.customerType}
-                  onChange={handleInputChange}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500"
-                >
-                  <option value="">Anyone</option>
-                  <option value="Kids">Kids</option>
-                  <option value="Adults">Adults</option>
-                  <option value="Families">Families</option>
-                  <option value="Seniors">Seniors</option>
-                </select>
-              </div>
+                <div className="mb-4">
+                  <label htmlFor="customerType" className="block text-gray-700 font-medium mb-2">
+                    Customer Type
+                  </label>
+                  <select
+                    id="customerType"
+                    name="customerType"
+                    value={preferences.customerType}
+                    onChange={handleInputChange}
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500"
+                  >
+                    <option value="">Anyone</option>
+                    <option value="Kids">Kids</option>
+                    <option value="Adults">Adults</option>
+                    <option value="Families">Families</option>
+                    <option value="Seniors">Seniors</option>
+                  </select>
+                </div>
 
-              <div className="mb-4">
-                <label htmlFor="weather" className="block text-gray-700 font-medium mb-2">
-                  Weather Suitability
-                </label>
-                <select
-                  id="weather"
-                  name="weather"
-                  value={preferences.weather}
-                  onChange={handleInputChange}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500"
-                >
-                  <option value="">Any Weather</option>
-                  <option value="Hot">Hot Day</option>
-                  <option value="Cold">Cold Day</option>
-                  <option value="Rainy">Rainy Day</option>
-                </select>
-              </div>
+                <div className="mb-4">
+                  <label htmlFor="weather" className="block text-gray-700 font-medium mb-2">
+                    Weather Suitability
+                  </label>
+                  <select
+                    id="weather"
+                    name="weather"
+                    value={preferences.weather}
+                    onChange={handleInputChange}
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500"
+                  >
+                    <option value="">Any Weather</option>
+                    <option value="Hot">Hot Day</option>
+                    <option value="Cold">Cold Day</option>
+                    <option value="Rainy">Rainy Day</option>
+                  </select>
+                </div>
 
-              <div className="mb-4">
-                <label htmlFor="sortBy" className="block text-gray-700 font-medium mb-2">
-                  Sort Results By
-                </label>
-                <select
-                  id="sortBy"
-                  name="sortBy"
-                  value={preferences.sortBy}
-                  onChange={handleInputChange}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500"
-                >
-                  <option value="default">Default</option>
-                  <option value="price-low">Price: Low to High</option>
-                  <option value="price-high">Price: High to Low</option>
-                  <option value="spice-low">Spice Level: Low to High</option>
-                  <option value="spice-high">Spice Level: High to Low</option>
-                  <option value="alphabetical">Alphabetical</option>
-                </select>
-              </div>
-            </>
-          )}
+                <div className="mb-4">
+                  <label htmlFor="sortBy" className="block text-gray-700 font-medium mb-2">
+                    Sort Results By
+                  </label>
+                  <select
+                    id="sortBy"
+                    name="sortBy"
+                    value={preferences.sortBy}
+                    onChange={handleInputChange}
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500"
+                  >
+                    <option value="default">Default</option>
+                    <option value="price-low">Price: Low to High</option>
+                    <option value="price-high">Price: High to Low</option>
+                    <option value="spice-low">Spice Level: Low to High</option>
+                    <option value="spice-high">Spice Level: High to Low</option>
+                    <option value="alphabetical">Alphabetical</option>
+                  </select>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Submit Button */}
           <div className="md:col-span-2 text-center mt-6">
-            <button
+            <motion.button
               type="submit"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               className="bg-red-600 text-white py-3 px-8 rounded-lg hover:bg-red-700 transition-colors text-lg font-bold"
             >
               Find My Meal
-            </button>
+            </motion.button>
           </div>
         </form>
       </section>
 
       {/* Results Section */}
-      <section>
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-gray-800">
+      <section className="mb-12">
+        <div className="flex justify-between items-center mb-8">
+          <h2 className="text-3xl font-bold text-gray-800">
             Menu Recommendations ({suggestions.length})
           </h2>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {renderSuggestions()}
         </div>
       </section>
 
-      <div className="mt-10 flex justify-center gap-2 flex-wrap">
+      <div className="py-12 flex justify-center gap-3 flex-wrap">
         {renderPagination()}
       </div>
     </main>

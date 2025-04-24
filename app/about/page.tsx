@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import { motion } from 'framer-motion';
 import Image from 'next/image';
@@ -25,7 +25,7 @@ export default function AboutPage() {
   ];
 
   return (
-    <main className="flex-1 w-full ml-[200px] max-w-[calc(100%-200px)]">
+    <main className="md:ml-[200px] bg-gray-50 min-h-screen">
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-red-600 to-red-800 text-white relative py-20 px-12 md:px-24">
         <div className="absolute inset-0 bg-black/20"></div>
@@ -44,7 +44,7 @@ export default function AboutPage() {
       </section>
 
       {/* Main Content */}
-      <section className="py-16 px-12 md:px-24 bg-white">
+      <section className="py-20 px-12 md:px-24 bg-white">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <motion.div
             initial={{ opacity: 0, x: -30 }}
@@ -54,7 +54,7 @@ export default function AboutPage() {
           >
             <h2 className="text-3xl font-bold text-gray-800 mb-6">Our Mission</h2>
             <p className="text-lg text-gray-600 mb-6 leading-relaxed">
-              DineMind is an AI-powered food recommendation system designed to help you discover the perfect meal based on your preferences. Whether you&apos;re looking for a quick bite or a meal for a special occasion, our system analyzes your tastes, dietary needs, and more to suggest the best dishes from our curated menu.
+              DineMind is an AI-powered food recommendation system designed to help you discover the perfect meal based on your preferences. Whether you$apos;re looking for a quick bite or a meal for a special occasion, our system analyzes your tastes, dietary needs, and more to suggest the best dishes from our curated menu.
             </p>
             <p className="text-lg text-gray-600 leading-relaxed">
               Our mission is to make dining decisions effortless and enjoyable, bringing you personalized recommendations that cater to your unique palate. Explore our recommendations, learn more about our offerings, and let DineMind guide you to your next delicious meal!
@@ -79,7 +79,7 @@ export default function AboutPage() {
       </section>
 
       {/* Our Values */}
-      <section className="py-16 px-12 md:px-24 bg-gray-50">
+      <section className="py-20 px-12 md:px-24 bg-gray-50">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -89,7 +89,7 @@ export default function AboutPage() {
         >
           <h2 className="text-3xl font-bold text-gray-800 mb-4">Our Values</h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            At DineMind, we&apos;re guided by these core principles that shape everything we do.
+            At DineMind, we$apos;re guided by these core principles that shape everything we do.
           </p>
         </motion.div>
 
@@ -114,7 +114,7 @@ export default function AboutPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 px-12 md:px-24 bg-gradient-to-br from-red-600 to-red-800 text-white">
+      <section className="py-20 px-12 md:px-24 bg-gradient-to-br from-red-600 to-red-800 text-white">
         <div className="max-w-3xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -130,7 +130,7 @@ export default function AboutPage() {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="bg-white text-red-600 px-10 py-3 rounded-lg font-medium transition-all duration-300 shadow-md"
+                className="bg-red-600 hover:bg-red-700 text-white px-10 py-3 rounded-lg font-bold transition-all duration-300 shadow-md"
               >
                 Get Started
               </motion.button>

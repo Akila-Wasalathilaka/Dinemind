@@ -1,8 +1,8 @@
-'use client'
+'use client';
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion'; // Import AnimatePresence for dropdown animation
 import FoodCard from '@/components/FoodCard';
 import SearchBar from '@/components/SearchBar';
 import { FaHeart, FaTrash, FaSort } from 'react-icons/fa';
@@ -17,7 +17,7 @@ export default function FavoritesPage() {
     tags: string[];
     savedAt: Date;
   }
-  
+
   const [favorites, setFavorites] = useState<Favorite[]>([]);
   const [filteredFavorites, setFilteredFavorites] = useState<Favorite[]>([]);
   const [activeFilter, setActiveFilter] = useState('all');
@@ -30,37 +30,36 @@ export default function FavoritesPage() {
 
   // Mock data - in a real app, this would come from an API or local storage
   useEffect(() => {
-    // Simulate loading favorites from storage
     const savedFavorites = [
       {
-        id: 1, 
+        id: 1,
         name: 'Mediterranean Bowl',
         description: 'Fresh veggies, hummus, falafel, and tahini dressing',
         image: '/food1.jpg',
         category: 'Healthy',
         tags: ['Vegetarian', 'High Protein'],
-        savedAt: new Date('2025-04-20T12:00:00')
+        savedAt: new Date('2025-04-20T12:00:00'),
       },
       {
-        id: 4, 
+        id: 4,
         name: 'Chocolate Lava Cake',
         description: 'Warm chocolate cake with a molten center, served with vanilla ice cream',
         image: '/dessert.jpg',
         category: 'Dessert',
         tags: ['Sweet', 'Indulgent'],
-        savedAt: new Date('2025-04-22T16:30:00')
+        savedAt: new Date('2025-04-22T16:30:00'),
       },
       {
-        id: 2, 
+        id: 2,
         name: 'Spicy Ramen',
         description: 'Rich broth with noodles, egg, and seasonal vegetables',
         image: '/food2.jpg',
         category: 'Comfort Food',
         tags: ['Spicy', 'Japanese'],
-        savedAt: new Date('2025-04-18T19:45:00')
-      }
+        savedAt: new Date('2025-04-18T19:45:00'),
+      },
     ];
-    
+
     setFavorites(savedFavorites);
     setFilteredFavorites(savedFavorites);
     setEmptySaved(savedFavorites.length === 0);
@@ -71,9 +70,10 @@ export default function FavoritesPage() {
     if (activeFilter === 'all') {
       setFilteredFavorites(favorites);
     } else {
-      const filtered = favorites.filter(dish => 
-        dish.category.toLowerCase() === activeFilter || 
-        dish.tags.some(tag => tag.toLowerCase() === activeFilter)
+      const filtered = favorites.filter(
+        (dish) =>
+          dish.category.toLowerCase() === activeFilter ||
+          dish.tags.some((tag) => tag.toLowerCase() === activeFilter)
       );
       setFilteredFavorites(filtered);
     }
@@ -82,8 +82,8 @@ export default function FavoritesPage() {
   // Sort favorites based on selected option
   useEffect(() => {
     const sorted = [...filteredFavorites];
-    
-    switch(sortOption) {
+
+    switch (sortOption) {
       case 'recent':
         sorted.sort((a, b) => new Date(b.savedAt).getTime() - new Date(a.savedAt).getTime());
         break;
@@ -96,7 +96,7 @@ export default function FavoritesPage() {
       default:
         break;
     }
-    
+
     setFilteredFavorites(sorted);
   }, [sortOption, activeFilter]);
 
@@ -112,96 +112,112 @@ export default function FavoritesPage() {
   };
 
   return (
-    <main className="flex-1 w-full ml-[200px] max-w-[calc(100%-200px)]">
+    <main className="md:ml-[200px] bg-gray-50 min-h-screen">
       {/* Header */}
-      <section className="bg-gradient-to-r from-red-600 to-red-800 py-16 px-12 md:px-24 text-white relative">
+      <section className="bg-gradient-to-r from-red-600 to-red-800 py-20 px-12 md:px-24 text-white relative">
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="relative z-10">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div>
-              <h1 className="text-4xl md:text-5xl font-bold mb-4">Your Saved Favorites</h1>
+              <h1 className="text-4xl md:text-5xl font-bold mb-4">
+                Your Saved Favorites
+              </h1>
               <p className="text-xl text-gray-100">
                 All your culinary discoveries in one place
               </p>
             </div>
             <div className="mt-6 md:mt-0">
-              <SearchBar/>
+              <SearchBar />
             </div>
           </div>
         </div>
       </section>
 
       {/* Filter and Sort Controls */}
-      <section className="bg-white py-6 px-12 md:px-24 sticky top-0 z-20 border-b shadow-sm">
-        <div className="flex flex-col sm:flex-row justify-between items-center">
+      <section className="bg-white py-8 px-12 md:px-24 sticky top-0 z-20 border-b shadow-sm">
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
           {/* Categories */}
           <div className="flex overflow-x-auto py-2 mb-4 sm:mb-0 w-full sm:w-auto">
             {categories.map((category) => (
-              <button
+              <motion.button
                 key={category}
                 onClick={() => setActiveFilter(category)}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 className={`whitespace-nowrap px-4 py-2 rounded-full mr-2 capitalize transition ${
-                  activeFilter === category 
-                    ? 'bg-red-600 text-white' 
+                  activeFilter === category
+                    ? 'bg-red-600 text-white'
                     : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
                 }`}
               >
                 {category}
-              </button>
+              </motion.button>
             ))}
           </div>
 
           {/* Sort Options */}
           <div className="flex items-center relative">
-            <button 
+            <motion.button
               onClick={() => setIsFilterMenuOpen(!isFilterMenuOpen)}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-lg"
             >
               <FaSort /> Sort By: <span className="font-medium capitalize">{sortOption}</span>
-            </button>
-            
-            {isFilterMenuOpen && (
-              <div className="absolute top-full right-0 mt-2 bg-white rounded-lg shadow-lg p-2 z-30 w-48">
-                {['recent', 'oldest', 'name'].map((option) => (
-                  <button
-                    key={option}
-                    onClick={() => {
-                      setSortOption(option);
-                      setIsFilterMenuOpen(false);
-                    }}
-                    className={`w-full text-left px-4 py-2 rounded hover:bg-gray-100 capitalize ${
-                      sortOption === option ? 'bg-gray-100 font-medium' : ''
-                    }`}
-                  >
-                    {option}
-                  </button>
-                ))}
-              </div>
-            )}
+            </motion.button>
+
+            <AnimatePresence>
+              {isFilterMenuOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute top-full right-0 mt-2 bg-white rounded-lg shadow-lg p-2 z-30 w-48"
+                >
+                  {['recent', 'oldest', 'name'].map((option) => (
+                    <motion.button
+                      key={option}
+                      onClick={() => {
+                        setSortOption(option);
+                        setIsFilterMenuOpen(false);
+                      }}
+                      whileHover={{ backgroundColor: '#f3f4f6' }}
+                      className={`w-full text-left px-4 py-2 rounded hover:bg-gray-100 capitalize ${
+                        sortOption === option ? 'bg-gray-100 font-medium' : ''
+                      }`}
+                    >
+                      {option}
+                    </motion.button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
       </section>
 
       {/* Favorites Content */}
-      <section className="py-12 px-12 md:px-24 bg-gray-50 min-h-screen">
+      <section className="py-20 px-12 md:px-24 bg-gray-50">
         {emptySaved ? (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
             className="text-center py-24"
           >
             <div className="bg-white p-6 rounded-full inline-block mb-8 shadow-sm">
               <FaHeart className="text-gray-300 h-16 w-16" />
             </div>
-            <h2 className="text-3xl font-bold mb-4">No favorites yet</h2>
+            <h2 className="text-3xl font-bold mb-4">No Favorites Yet</h2>
             <p className="text-gray-600 max-w-md mx-auto mb-8">
-              Start exploring and save dishes you love to build your personal collection
+              Start exploring and save dishes you love to build your personal collection.
             </p>
             <Link href="/recommendations">
-              <motion.button 
+              <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-lg font-medium transition-all duration-300"
+                className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-lg font-bold transition-all duration-300 shadow-md"
               >
                 Explore Recommendations
               </motion.button>
@@ -211,7 +227,7 @@ export default function FavoritesPage() {
           <>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredFavorites.map((dish, index) => (
-                <motion.div 
+                <motion.div
                   key={dish.id}
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -229,8 +245,13 @@ export default function FavoritesPage() {
                       <FaTrash size={16} />
                     </motion.button>
                   </div>
-                  <FoodCard dish={dish}/>
-                  <div className="mt-2 text-sm text-gray-500">
+                  <motion.div
+                    whileHover={{ y: -5, boxShadow: "0 10px 20px rgba(0, 0, 0, 0.15)" }}
+                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                  >
+                    <FoodCard dish={dish} />
+                  </motion.div>
+                  <div className="mt-3 text-sm text-gray-500">
                     Saved on {dish.savedAt.toLocaleDateString()}
                   </div>
                 </motion.div>
@@ -242,16 +263,16 @@ export default function FavoritesPage() {
 
       {/* Collections Section */}
       {!emptySaved && (
-        <section className="py-12 px-12 md:px-24 bg-white">
-          <div className="mb-8">
+        <section className="py-20 px-12 md:px-24 bg-white">
+          <div className="mb-12">
             <h2 className="text-3xl font-bold mb-4">Create Collections</h2>
             <p className="text-gray-600">
-              Organize your favorites into themed collections for easier access
+              Organize your favorites into themed collections for easier access.
             </p>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <motion.div 
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <motion.div
               whileHover={{ scale: 1.02 }}
               className="bg-gray-50 border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-red-300 transition-colors"
             >
@@ -259,25 +280,26 @@ export default function FavoritesPage() {
                 <FaHeart className="text-red-500 h-6 w-6" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Create New Collection</h3>
-              <p className="text-gray-600">Group your favorite dishes by occasion, cuisine, or mood</p>
+              <p className="text-gray-600">
+                Group your favorite dishes by occasion, cuisine, or mood.
+              </p>
             </motion.div>
-            
-            {/* Example existing collections */}
-            <motion.div 
+
+            <motion.div
               whileHover={{ scale: 1.02 }}
               className="bg-gradient-to-br from-amber-50 to-amber-100 rounded-xl p-8 shadow-sm cursor-pointer"
             >
               <h3 className="text-xl font-semibold mb-2">Weekend Brunch</h3>
-              <p className="text-gray-600 mb-4">Perfect dishes for lazy weekend mornings</p>
+              <p className="text-gray-600 mb-4">Perfect dishes for lazy weekend mornings.</p>
               <div className="text-sm text-gray-500">3 items</div>
             </motion.div>
-            
-            <motion.div 
+
+            <motion.div
               whileHover={{ scale: 1.02 }}
               className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-8 shadow-sm cursor-pointer"
             >
               <h3 className="text-xl font-semibold mb-2">Healthy Options</h3>
-              <p className="text-gray-600 mb-4">Nutritious meals for fitness goals</p>
+              <p className="text-gray-600 mb-4">Nutritious meals for fitness goals.</p>
               <div className="text-sm text-gray-500">5 items</div>
             </motion.div>
           </div>
@@ -285,17 +307,17 @@ export default function FavoritesPage() {
       )}
 
       {/* CTA Section */}
-      <section className="py-16 px-12 md:px-24 text-center bg-gray-100">
+      <section className="py-20 px-12 md:px-24 text-center bg-gray-100">
         <h2 className="text-3xl font-bold mb-6">Discover More Culinary Delights</h2>
         <p className="text-gray-600 max-w-2xl mx-auto mb-8">
-          Explore our AI-powered recommendations to find your next favorite dish
+          Explore our AI-powered recommendations to find your next favorite dish.
         </p>
-        
+
         <Link href="/recommendations">
-          <motion.button 
+          <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="bg-red-600 hover:bg-red-700 text-white px-10 py-3 rounded-lg font-medium transition-all duration-300 shadow-md"
+            className="bg-red-600 hover:bg-red-700 text-white px-10 py-3 rounded-lg font-bold transition-all duration-300 shadow-md"
           >
             Browse Recommendations
           </motion.button>

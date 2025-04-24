@@ -1,19 +1,8 @@
-// Root Layout - layout.tsx
+// app/layout.tsx
+
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Header from '@/components/Header';
-
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import Header from "@/components/Header";
 
 export const metadata: Metadata = {
   title: "DineMind | AI-Powered Food Journey",
@@ -22,7 +11,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "DineMind | AI-Powered Food Journey",
     description: "Discover your next favorite meal with our AI-powered recommendations",
-    images: ['/og-image.jpg'],
+    images: ["/og-image.jpg"],
   },
 };
 
@@ -33,12 +22,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="scroll-smooth">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased flex min-h-screen w-full max-w-[1440px] mx-auto bg-neutral-50 dark:bg-neutral-900 transition-colors duration-300`}
-      >
-        <Header />
-        <div className="flex-1 flex flex-col">
-          {children}
+      <body className="bg-neutral-50 dark:bg-neutral-900 antialiased">
+        {/* This wrapper allows layout to stay consistent */}
+        <div className="flex flex-col md:flex-row min-h-screen max-w-[1440px] mx-auto relative">
+          {/* Header includes mobile sidebar toggle logic */}
+          <Header />
+          {/* Main content wrapper */}
+          <main className="flex-1 w-full flex flex-col overflow-x-hidden">
+            {children}
+          </main>
         </div>
       </body>
     </html>
