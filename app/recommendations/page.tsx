@@ -9,7 +9,8 @@ const menuItems = [
     title: "Chicken Fried Rice",
     category: "Rice",
     description: "Delicious chicken fried rice with vegetables.",
-    price: "$8.99",
+    price: 8.99,
+    priceDisplay: "$8.99",
     image: "/images/chicken-fried-rice.jpg",
     cuisine: "Asian",
     dietary: "Non-vegetarian",
@@ -27,7 +28,8 @@ const menuItems = [
     title: "Egg Noodles",
     category: "Noodles",
     description: "Spicy egg noodles with a touch of soy sauce.",
-    price: "$7.49",
+    price: 7.49,
+    priceDisplay: "$7.49",
     image: "/images/egg-noodles.jpg",
     cuisine: "Chinese",
     dietary: "Vegetarian",
@@ -45,7 +47,8 @@ const menuItems = [
     title: "Vegetable Kottu",
     category: "Kottu",
     description: "A mix of vegetables in Sri Lankan style Kottu.",
-    price: "$6.99",
+    price: 6.99,
+    priceDisplay: "$6.99",
     image: "/images/veg-kottu.jpg",
     cuisine: "Sri Lankan",
     dietary: "Vegetarian",
@@ -63,7 +66,8 @@ const menuItems = [
     title: "Cheese Burger",
     category: "Burger",
     description: "Juicy beef patty with cheese and pickles.",
-    price: "$9.49",
+    price: 9.49,
+    priceDisplay: "$9.49",
     image: "/images/cheese-burger.jpg",
     cuisine: "American",
     dietary: "Non-vegetarian",
@@ -81,7 +85,8 @@ const menuItems = [
     title: "Chicken Submarine",
     category: "Submarine",
     description: "Grilled chicken with salad in submarine bun.",
-    price: "$7.99",
+    price: 7.99,
+    priceDisplay: "$7.99",
     image: "/images/chicken-sub.jpg",
     cuisine: "American",
     dietary: "Non-vegetarian",
@@ -99,7 +104,8 @@ const menuItems = [
     title: "Seafood Rice",
     category: "Rice",
     description: "Fried rice mixed with shrimp and fish.",
-    price: "$10.99",
+    price: 10.99,
+    priceDisplay: "$10.99",
     image: "/images/seafood-rice.jpg",
     cuisine: "Asian",
     dietary: "Seafood",
@@ -117,7 +123,8 @@ const menuItems = [
     title: "Beef Kottu",
     category: "Kottu",
     description: "Sri Lankan beef kottu roti with egg and spices.",
-    price: "$9.29",
+    price: 9.29,
+    priceDisplay: "$9.29",
     image: "/images/beef-kottu.jpg",
     cuisine: "Sri Lankan",
     dietary: "Non-vegetarian",
@@ -135,7 +142,8 @@ const menuItems = [
     title: "Veg Submarine",
     category: "Submarine",
     description: "Healthy veggie submarine with lettuce and cheese.",
-    price: "$6.79",
+    price: 6.79,
+    priceDisplay: "$6.79",
     image: "/images/veg-sub.jpg",
     cuisine: "American",
     dietary: "Vegetarian",
@@ -162,11 +170,15 @@ export default function RecommendationPage() {
     time: "",
     customerType: "",
     weather: "",
+    priceRange: { min: 0, max: 15 },
+    category: "",
+    sortBy: "default"
   });
 
   const [suggestions, setSuggestions] = useState(menuItems);
   const [currentPage, setCurrentPage] = useState(1);
   const perPage = 6;
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
   interface Preferences {
     cuisine: string;
@@ -179,6 +191,9 @@ export default function RecommendationPage() {
     time: string;
     customerType: string;
     weather: string;
+    priceRange: { min: number; max: number };
+    category: string;
+    sortBy: string;
   }
 
   interface MenuItem {
@@ -186,7 +201,8 @@ export default function RecommendationPage() {
     title: string;
     category: string;
     description: string;
-    price: string;
+    price: number;
+    priceDisplay: string;
     image: string;
     cuisine: string;
     dietary: string;
@@ -201,7 +217,7 @@ export default function RecommendationPage() {
   }
 
   const getSuggestions = (prefs: Preferences): MenuItem[] => {
-    return menuItems.filter((item) => {
+    const filtered = menuItems.filter((item) => {
       return (
         (!prefs.cuisine || item.cuisine === prefs.cuisine) &&
         (!prefs.dietary ||
@@ -214,9 +230,35 @@ export default function RecommendationPage() {
         (!prefs.occasion || item.occasion === prefs.occasion) &&
         (!prefs.time || item.time === prefs.time) &&
         (!prefs.customerType || item.customer === prefs.customerType) &&
-        (!prefs.weather || item.weather === prefs.weather)
+        (!prefs.weather || item.weather === prefs.weather) &&
+        (!prefs.category || item.category === prefs.category) &&
+        (item.price >= prefs.priceRange.min && item.price <= prefs.priceRange.max)
       );
     });
+
+    // Sort the filtered items
+    switch(prefs.sortBy) {
+      case "price-low":
+        filtered.sort((a, b) => a.price - b.price);
+        break;
+      case "price-high":
+        filtered.sort((a, b) => b.price - a.price);
+        break;
+      case "spice-low":
+        filtered.sort((a, b) => a.spice - b.spice);
+        break;
+      case "spice-high":
+        filtered.sort((a, b) => b.spice - a.spice);
+        break;
+      case "alphabetical":
+        filtered.sort((a, b) => a.title.localeCompare(b.title));
+        break;
+      default:
+        // Default sorting (can be by ID or other default order)
+        filtered.sort((a, b) => a.id - b.id);
+    }
+
+    return filtered;
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -227,7 +269,19 @@ export default function RecommendationPage() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setPreferences((prev) => ({ ...prev, [name]: value }));
+    
+    if (name === "priceMin" || name === "priceMax") {
+      const priceValue = parseFloat(value);
+      setPreferences((prev) => ({
+        ...prev,
+        priceRange: {
+          ...prev.priceRange,
+          [name === "priceMin" ? "min" : "max"]: priceValue,
+        },
+      }));
+    } else {
+      setPreferences((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
   const renderSuggestions = () => {
@@ -254,11 +308,20 @@ export default function RecommendationPage() {
           className="w-full h-48 object-cover rounded-t-lg"
         />
         <div className="p-4">
-          <h3 className="text-xl font-semibold text-gray-800">{item.title}</h3>
-          <p className="text-gray-600">{item.category}</p>
-          <p className="text-gray-600">{item.description}</p>
-          <p className="text-gray-600">{item.price}</p>
-          <button className="mt-2 bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700 transition-colors text-lg">
+          <div className="flex justify-between items-center mb-2">
+            <h3 className="text-xl font-semibold text-gray-800">{item.title}</h3>
+            <span className="font-bold text-red-600">{item.priceDisplay}</span>
+          </div>
+          <div className="flex flex-wrap gap-2 mb-2">
+            <span className="px-2 py-1 bg-gray-100 text-gray-700 text-sm rounded">{item.category}</span>
+            <span className="px-2 py-1 bg-gray-100 text-gray-700 text-sm rounded">{item.cuisine}</span>
+            <span className="px-2 py-1 bg-gray-100 text-gray-700 text-sm rounded">{item.dietary}</span>
+            <span className="px-2 py-1 bg-gray-100 text-gray-700 text-sm rounded">
+              Spice: {Array(item.spice).fill('🌶️').join('')}
+            </span>
+          </div>
+          <p className="text-gray-600 mb-4">{item.description}</p>
+          <button className="mt-2 bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700 transition-colors text-lg w-full">
             Order Now
           </button>
         </div>
@@ -330,7 +393,7 @@ export default function RecommendationPage() {
           onSubmit={handleSubmit}
           className="grid grid-cols-1 md:grid-cols-2 gap-6"
         >
-          {/* Cuisine Selection */}
+          {/* Basic Filters Row */}
           <div className="mb-4">
             <label htmlFor="cuisine" className="block text-gray-700 font-medium mb-2">
               Cuisine Type
@@ -350,7 +413,6 @@ export default function RecommendationPage() {
             </select>
           </div>
 
-          {/* Dietary Preference */}
           <div className="mb-4">
             <label htmlFor="dietary" className="block text-gray-700 font-medium mb-2">
               Dietary Preference
@@ -369,10 +431,84 @@ export default function RecommendationPage() {
             </select>
           </div>
 
+          <div className="mb-4">
+            <label htmlFor="category" className="block text-gray-700 font-medium mb-2">
+              Food Category
+            </label>
+            <select
+              id="category"
+              name="category"
+              value={preferences.category}
+              onChange={handleInputChange}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500"
+            >
+              <option value="">Any Category</option>
+              <option value="Rice">Rice</option>
+              <option value="Noodles">Noodles</option>
+              <option value="Kottu">Kottu</option>
+              <option value="Burger">Burger</option>
+              <option value="Submarine">Submarine</option>
+            </select>
+          </div>
+
+          <div className="mb-4">
+            <label htmlFor="mealType" className="block text-gray-700 font-medium mb-2">
+              Meal Type
+            </label>
+            <select
+              id="mealType"
+              name="mealType"
+              value={preferences.mealType}
+              onChange={handleInputChange}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500"
+            >
+              <option value="">Any Meal Type</option>
+              <option value="Breakfast">Breakfast</option>
+              <option value="Lunch">Lunch</option>
+              <option value="Dinner">Dinner</option>
+              <option value="Snack">Snack</option>
+            </select>
+          </div>
+
+          {/* Price Range */}
+          <div className="mb-4">
+            <label className="block text-gray-700 font-medium mb-2">
+              Price Range (${preferences.priceRange.min} - ${preferences.priceRange.max})
+            </label>
+            <div className="flex space-x-4">
+              <div className="flex-1">
+                <input
+                  type="number"
+                  name="priceMin"
+                  min="0"
+                  max="15"
+                  step="0.01"
+                  value={preferences.priceRange.min}
+                  onChange={handleInputChange}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500"
+                  placeholder="Min"
+                />
+              </div>
+              <div className="flex-1">
+                <input
+                  type="number"
+                  name="priceMax"
+                  min="0"
+                  max="15"
+                  step="0.01"
+                  value={preferences.priceRange.max}
+                  onChange={handleInputChange}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500"
+                  placeholder="Max"
+                />
+              </div>
+            </div>
+          </div>
+
           {/* Spice Level */}
           <div className="mb-4">
             <label htmlFor="spice" className="block text-gray-700 font-medium mb-2">
-              Max Spice Level (1-5)
+              Max Spice Level (1-5): {preferences.spice}
             </label>
             <input
               type="range"
@@ -391,11 +527,160 @@ export default function RecommendationPage() {
             </div>
           </div>
 
+          {/* Advanced Filters Toggle */}
+          <div className="mb-4 md:col-span-2">
+            <button 
+              type="button" 
+              onClick={() => setShowAdvanced(!showAdvanced)}
+              className="text-red-600 font-medium flex items-center"
+            >
+              {showAdvanced ? '− Hide Advanced Filters' : '+ Show Advanced Filters'}
+            </button>
+          </div>
+
+          {/* Advanced Filters */}
+          {showAdvanced && (
+            <>
+              <div className="mb-4">
+                <label htmlFor="flavor" className="block text-gray-700 font-medium mb-2">
+                  Flavor Profile
+                </label>
+                <select
+                  id="flavor"
+                  name="flavor"
+                  value={preferences.flavor}
+                  onChange={handleInputChange}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500"
+                >
+                  <option value="">Any Flavor</option>
+                  <option value="Savory">Savory</option>
+                  <option value="Sweet">Sweet</option>
+                  <option value="Spicy">Spicy</option>
+                  <option value="Mild">Mild</option>
+                  <option value="Tangy">Tangy</option>
+                </select>
+              </div>
+
+              <div className="mb-4">
+                <label htmlFor="portion" className="block text-gray-700 font-medium mb-2">
+                  Portion Size
+                </label>
+                <select
+                  id="portion"
+                  name="portion"
+                  value={preferences.portion}
+                  onChange={handleInputChange}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500"
+                >
+                  <option value="">Any Size</option>
+                  <option value="Small">Small</option>
+                  <option value="Regular">Regular</option>
+                  <option value="Large">Large</option>
+                </select>
+              </div>
+
+              <div className="mb-4">
+                <label htmlFor="occasion" className="block text-gray-700 font-medium mb-2">
+                  Occasion
+                </label>
+                <select
+                  id="occasion"
+                  name="occasion"
+                  value={preferences.occasion}
+                  onChange={handleInputChange}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500"
+                >
+                  <option value="">Any Occasion</option>
+                  <option value="Casual">Casual</option>
+                  <option value="Special">Special</option>
+                  <option value="Party">Party</option>
+                  <option value="Quick Bite">Quick Bite</option>
+                </select>
+              </div>
+
+              <div className="mb-4">
+                <label htmlFor="time" className="block text-gray-700 font-medium mb-2">
+                  Time of Day
+                </label>
+                <select
+                  id="time"
+                  name="time"
+                  value={preferences.time}
+                  onChange={handleInputChange}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500"
+                >
+                  <option value="">Any Time</option>
+                  <option value="Morning">Morning</option>
+                  <option value="Day">Day</option>
+                  <option value="Evening">Evening</option>
+                  <option value="Night">Night</option>
+                </select>
+              </div>
+
+              <div className="mb-4">
+                <label htmlFor="customerType" className="block text-gray-700 font-medium mb-2">
+                  Customer Type
+                </label>
+                <select
+                  id="customerType"
+                  name="customerType"
+                  value={preferences.customerType}
+                  onChange={handleInputChange}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500"
+                >
+                  <option value="">Anyone</option>
+                  <option value="Kids">Kids</option>
+                  <option value="Adults">Adults</option>
+                  <option value="Families">Families</option>
+                  <option value="Seniors">Seniors</option>
+                </select>
+              </div>
+
+              <div className="mb-4">
+                <label htmlFor="weather" className="block text-gray-700 font-medium mb-2">
+                  Weather Suitability
+                </label>
+                <select
+                  id="weather"
+                  name="weather"
+                  value={preferences.weather}
+                  onChange={handleInputChange}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500"
+                >
+                  <option value="">Any Weather</option>
+                  <option value="Hot">Hot Day</option>
+                  <option value="Cold">Cold Day</option>
+                  <option value="Rainy">Rainy Day</option>
+                </select>
+              </div>
+
+              <div className="mb-4">
+                <label htmlFor="sortBy" className="block text-gray-700 font-medium mb-2">
+                  Sort Results By
+                </label>
+                <select
+                  id="sortBy"
+                  name="sortBy"
+                  value={preferences.sortBy}
+                  onChange={handleInputChange}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500"
+                >
+                  <option value="default">Default</option>
+                  <option value="price-low">Price: Low to High</option>
+                  <option value="price-high">Price: High to Low</option>
+                  <option value="spice-low">Spice Level: Low to High</option>
+                  <option value="spice-high">Spice Level: High to Low</option>
+                  <option value="alphabetical">Alphabetical</option>
+                </select>
+              </div>
+            </>
+          )}
+
           {/* Submit Button */}
-          <div className="md:col-span-2 text-center">
+          <div className="md:col-span-2 text-center mt-6">
             <button
               type="submit"
-              className="bg-red-600 text-white py-3 px-6 rounded-lg hover:bg-red-700 transition-colors text-lg font-bold"
+              className="bg-red-600 text-white py-3 px-8 rounded-lg hover:bg-red-700 transition-colors text-lg font-bold"
             >
               Find My Meal
             </button>
@@ -403,8 +688,16 @@ export default function RecommendationPage() {
         </form>
       </section>
 
-      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {renderSuggestions()}
+      {/* Results Section */}
+      <section>
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold text-gray-800">
+            Menu Recommendations ({suggestions.length})
+          </h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {renderSuggestions()}
+        </div>
       </section>
 
       <div className="mt-10 flex justify-center gap-2 flex-wrap">
